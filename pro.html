@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VoxLingua | Multilingual Voice Translator</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Theme Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-primary-fixed": "#001a41",
+                "inverse-primary": "#adc6ff",
+                "surface-container-high": "#dce9ff",
+                "on-secondary-fixed-variant": "#3f465c",
+                "surface": "#f8f9ff",
+                "outline-variant": "#c1c6d7",
+                "secondary-container": "#dae2fd",
+                "surface-container-highest": "#d3e4fe",
+                "secondary-fixed-dim": "#bec6e0",
+                "secondary": "#565e74",
+                "on-secondary-container": "#5c647a",
+                "on-background": "#0b1c30",
+                "on-secondary-fixed": "#131b2e",
+                "on-tertiary-fixed-variant": "#005236",
+                "tertiary-container": "#00855b",
+                "inverse-on-surface": "#eaf1ff",
+                "surface-container": "#e5eeff",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-low": "#eff4ff",
+                "on-error-container": "#93000a",
+                "surface-variant": "#d3e4fe",
+                "primary-fixed-dim": "#adc6ff",
+                "inverse-surface": "#213145",
+                "on-tertiary": "#ffffff",
+                "secondary-fixed": "#dae2fd",
+                "on-tertiary-fixed": "#002113",
+                "on-secondary": "#ffffff",
+                "error-container": "#ffdad6",
+                "background": "#f8f9ff",
+                "on-primary": "#ffffff",
+                "primary-container": "#0070eb",
+                "on-primary-fixed-variant": "#004493",
+                "tertiary": "#006947",
+                "surface-bright": "#f8f9ff",
+                "outline": "#717786",
+                "surface-dim": "#cbdbf5",
+                "on-error": "#ffffff",
+                "on-primary-container": "#fefcff",
+                "tertiary-fixed": "#6ffbbe",
+                "error": "#ba1a1a",
+                "primary-fixed": "#d8e2ff",
+                "primary": "#0058bc",
+                "on-surface-variant": "#414755",
+                "tertiary-fixed-dim": "#4edea3",
+                "surface-tint": "#005bc1",
+                "on-tertiary-container": "#f5fff6",
+                "on-surface": "#0b1c30"
+              },
+              borderRadius: {
+                DEFAULT: "0.25rem",
+                lg: "0.5rem",
+                xl: "0.75rem",
+                full: "9999px"
+              },
+              spacing: {
+                "unit": "8px",
+                "margin-mobile": "16px",
+                "margin-tablet": "24px",
+                "margin-desktop": "40px",
+                "gutter": "24px",
+                "container-max": "1280px"
+              },
+              fontFamily: {
+                "headline-lg-mobile": ["Plus Jakarta Sans"],
+                "body-sm": ["Noto Sans"],
+                "headline-lg": ["Plus Jakarta Sans"],
+                "body-lg": ["Noto Sans"],
+                "display-lg": ["Plus Jakarta Sans"],
+                "label-md": ["Noto Sans"],
+                "body-md": ["Noto Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "label-sm": ["Noto Sans"]
+              }
+            },
+          },
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .status-pulse {
+            animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .7; transform: scale(1.2); }
+        }
+        .drag-dash-border {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23CBD5E1FF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            border-radius: 12px;
+        }
+        .drag-dash-border:hover {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%230058bcFF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+        .code-switch-flash {
+            animation: pulse-red 1s infinite alternate;
+        }
+        @keyframes pulse-red {
+            0% { background-color: rgba(186, 26, 26, 0.1); color: #ba1a1a; }
+            100% { background-color: rgba(186, 26, 26, 0.8); color: #ffffff; }
+        }
+        .node-flow-gradient {
+            background: linear-gradient(90deg, #0058bc 0%, #00855b 50%, #0058bc 100%);
+            background-size: 200% auto;
+            animation: flow 3s linear infinite;
+        }
+        @keyframes flow {
+            to { background-position: 200% center; }
+        }
+        .waveform-bar {
+            animation: wave 1.2s ease-in-out infinite alternate;
+        }
+        @keyframes wave {
+            0% { height: 20%; }
+            100% { height: 100%; }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+
+    <!-- Global Top Navigation Bar -->
+    <header class="bg-surface sticky top-0 z-50 border-b border-outline-variant">
+        <div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">translate</span>
+                    <span class="font-headline-md text-headline-md font-bold text-primary">VoxLingua</span>
+                </div>
+                <nav class="hidden md:flex gap-6 items-center">
+                    <button onclick="switchTab('gateway')" id="tab-gateway" class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1">Gateway</button>
+                    <button onclick="switchTab('insights')" id="tab-insights" class="font-label-md text-label-md text-secondary hover:text-primary-container transition-colors">Live Insights</button>
+                    <button onclick="switchTab('vault')" id="tab-vault" class="font-label-md text-label-md text-secondary hover:text-primary-container transition-colors">Analytics Vault</button>
+                </nav>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-secondary hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <button class="text-secondary hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-container">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 space-y-gutter">
+        
+        <!-- ========================================== -->
+        <!-- VIEW: GATEWAY                              -->
+        <!-- ========================================== -->
+        <div id="view-gateway" style="display: block;">
+            <section class="mb-12">
+                <h1 class="font-display-lg text-display-lg text-on-background mb-4 text-center md:text-left">
+                    VoxLingua: Multilingual Voice Translator
+                </h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl text-center md:text-left">
+                    Bridging regional language gaps instantly across Tamil, Telugu, and English. High-fidelity translation for enterprise, logistics, and medical environments.
+                </p>
+            </section>
+
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-12">
+                <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+                            <span class="material-symbols-outlined">mic</span>
+                        </div>
+                        <div>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">STT Engine</p>
+                            <p class="font-label-md text-label-md">Blaze-Node</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-tertiary status-pulse"></div>
+                        <span class="font-label-sm text-label-sm text-tertiary">Connected</span>
+                    </div>
+                </div>
+                <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+                            <span class="material-symbols-outlined">psychology</span>
+                        </div>
+                        <div>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">LLM Core</p>
+                            <p class="font-label-md text-label-md">Spark-1</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-tertiary status-pulse"></div>
+                        <span class="font-label-sm text-label-sm text-tertiary">Connected</span>
+                    </div>
+                </div>
+                <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+                            <span class="material-symbols-outlined">volume_up</span>
+                        </div>
+                        <div>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">TTS Engine</p>
+                            <p class="font-label-md text-label-md">Spark-2</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-tertiary status-pulse"></div>
+                        <span class="font-label-sm text-label-sm text-tertiary">Connected</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+                <div class="lg:col-span-8 flex flex-col gap-gutter">
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 transition-all hover:shadow-lg h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="material-symbols-outlined text-primary">upload_file</span>
+                            <h2 class="font-headline-md text-headline-md">Audio Source</h2>
+                        </div>
+                        <div class="drag-dash-border p-12 flex flex-col items-center justify-center cursor-pointer group transition-colors hover:bg-surface-container">
+                            <div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
+                            </div>
+                            <p class="font-label-md text-label-md text-on-surface mb-1">Drag and drop audio files</p>
+                            <p class="font-body-sm text-body-sm text-secondary">Support for MP3, WAV, FLAC (Max 50MB)</p>
+                            <input class="hidden" id="audio-upload" type="file"/>
+                        </div>
+                        <div class="relative my-8">
+                            <div aria-hidden="true" class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-outline-variant"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="bg-surface-container-lowest px-4 text-on-surface-variant font-label-sm">OR USE URL</span>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-secondary">link</span>
+                            </div>
+                            <input class="w-full pl-12 pr-4 py-4 rounded-lg border border-outline focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="Paste YouTube, Vimeo or Web URL for processing..." type="text"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4">
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 h-full sticky top-24">
+                        <div class="flex items-center gap-3 mb-8">
+                            <span class="material-symbols-outlined text-primary">tune</span>
+                            <h2 class="font-headline-md text-headline-md">Pipeline Settings</h2>
+                        </div>
+                        <div class="mb-10">
+                            <label class="block font-label-md text-label-md text-on-surface-variant mb-3">Target Language</label>
+                            <div class="relative">
+                                <select class="w-full appearance-none bg-surface border border-outline rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md">
+                                    <option value="english">English (US/UK)</option>
+                                    <option value="tamil">Tamil (Thamizh)</option>
+                                    <option value="telugu">Telugu (Telugu)</option>
+                                    <option value="hindi">Hindi (Manak Hindi)</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <span class="material-symbols-outlined text-secondary">expand_more</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-10">
+                            <label class="block font-label-md text-label-md text-on-surface-variant mb-4">Voice Tone & Style</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="cursor-pointer">
+                                    <input checked class="peer hidden" name="tone" type="radio" value="formal"/>
+                                    <div class="p-4 rounded-lg border border-outline peer-checked:border-primary peer-checked:bg-primary-fixed text-center transition-all">
+                                        <span class="material-symbols-outlined block mb-1">school</span>
+                                        <span class="font-label-md text-label-md block">Formal</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input class="peer hidden" name="tone" type="radio" value="informal"/>
+                                    <div class="p-4 rounded-lg border border-outline peer-checked:border-primary peer-checked:bg-primary-fixed text-center transition-all">
+                                        <span class="material-symbols-outlined block mb-1">chat</span>
+                                        <span class="font-label-md text-label-md block">Informal</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-8 p-4 bg-surface-container-low rounded-lg border border-outline-variant">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-sm text-secondary">info</span>
+                                <span class="font-label-sm text-label-sm text-secondary uppercase">Processing Note</span>
+                            </div>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant">
+                                Formal tone uses standard dictionary phonemes. Informal uses regional colloquialisms and emotional inflection.
+                            </p>
+                        </div>
+                        <div class="mt-auto">
+                            <img class="w-full h-32 object-cover rounded-lg opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDM2Fyz3h1fvAeQjUFFdnjOcQ6FMeZ1Xn3orUpGPatcJmsB2RKwwehdqFGVMcvWPqr9VojEwQInNyLAVUh8I2x_3ZWULs6PNqdEz4PBhNJyoT9AJ5f58aXB3gZcCe1Ij3ILl19X9F8s6WhB3XV-9sM5BkwfRXjHmNwQxmxDcpc7iUteduAlN7Qz_d3XjzmzGHFfnIDPxwxsO_yKkt_VNDiALL0vdAWXmzxs19wi8E3ZpZA2KuraJgVQt3-y8C7luRsXFEBxblJyMo"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex flex-col items-center justify-center">
+                <button onclick="switchTab('insights')" class="bg-primary text-on-primary font-headline-md text-headline-md px-12 py-5 rounded-full flex items-center gap-4 hover:bg-primary-container active:scale-95 transition-all shadow-lg hover:shadow-primary/20">
+                    <span class="material-symbols-outlined">play_circle</span>
+                    Execute Voice Translation Pipeline
+                </button>
+                <p class="mt-4 font-body-sm text-body-sm text-secondary">
+                    Estimated processing time: <span class="font-bold text-on-surface">~1.2x media duration</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW: LIVE INSIGHTS                        -->
+        <!-- ========================================== -->
+        <div id="view-insights" style="display: none;">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface">Live Pipeline Status</h1>
+                    <p class="font-body-md text-on-surface-variant">Real-time inference tracking and linguistic decomposition.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-2 bg-tertiary-container text-on-tertiary px-3 py-1.5 rounded-full font-label-sm text-label-sm">
+                        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                        LIVE STREAMING
+                    </span>
+                    <span class="text-on-surface-variant font-label-sm text-label-sm">Uptime: 02:14:55</span>
+                </div>
+            </header>
+
+            <section class="bg-surface-container-low rounded-xl p-6 border border-outline-variant shadow-sm overflow-hidden relative mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-center relative z-10 gap-8">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-md">
+                            <span class="material-symbols-outlined text-[32px]">bolt</span>
+                        </div>
+                        <span class="font-label-md text-label-md font-bold">Blaze</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">STT Engine</span>
+                    </div>
+                    <div class="flex-grow hidden md:block h-1 bg-outline-variant rounded-full overflow-hidden relative">
+                        <div class="absolute inset-0 node-flow-gradient"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-16 h-16 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary shadow-md border-4 border-tertiary-fixed-dim">
+                            <span class="material-symbols-outlined text-[32px]">psychology</span>
+                        </div>
+                        <span class="font-label-md text-label-md font-bold">Qwen2</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">Inference LLM</span>
+                    </div>
+                    <div class="flex-grow hidden md:block h-1 bg-outline-variant rounded-full overflow-hidden relative">
+                        <div class="absolute inset-0 node-flow-gradient" style="animation-delay: 1.5s;"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-md">
+                            <span class="material-symbols-outlined text-[32px]">record_voice_over</span>
+                        </div>
+                        <span class="font-label-md text-label-md font-bold">Spark</span>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant">TTS Generator</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+                <aside class="lg:col-span-4 space-y-gutter">
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Detected Language</span>
+                            <span class="material-symbols-outlined text-primary">translate</span>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <span class="font-headline-md text-headline-md font-bold">Tamil</span>
+                            <span class="font-headline-md text-headline-md text-primary">98.4%</span>
+                        </div>
+                        <div class="mt-4 h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                            <div class="h-full bg-primary" style="width: 98.4%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Code-Switch Flag</span>
+                            <span class="material-symbols-outlined text-error">warning</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="code-switch-flash px-3 py-1 rounded-full font-label-md text-label-md font-bold flex items-center gap-2">TRUE</span>
+                            <p class="text-body-sm font-body-sm text-on-surface-variant">Switching to English detected at 02:14:12</p>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">VRAM Footprint</span>
+                            <span class="material-symbols-outlined text-tertiary">memory</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between font-label-sm text-label-sm mb-1">
+                                    <span>Blaze Engine</span>
+                                    <span class="font-bold">2.1GB / 4.0GB</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                    <div class="h-full bg-tertiary" style="width: 52.5%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between font-label-sm text-label-sm mb-1">
+                                    <span>Inference Node</span>
+                                    <span class="font-bold">12.4GB / 16GB</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                    <div class="h-full bg-primary" style="width: 77.5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-inverse-surface text-inverse-on-surface rounded-xl p-5 shadow-lg border border-outline">
+                        <span class="font-label-sm text-label-sm text-outline-variant uppercase tracking-wider mb-4 block">Voice Synthesis Output</span>
+                        <div class="flex items-center gap-4">
+                            <button class="w-12 h-12 flex-shrink-0 bg-primary rounded-full flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                            </button>
+                            <div class="flex-grow flex items-end gap-[2px] h-10 px-2 overflow-hidden">
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 40%; animation-delay: 0.1s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 70%; animation-delay: 0.2s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 50%; animation-delay: 0.3s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 90%; animation-delay: 0.4s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 30%; animation-delay: 0.5s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 60%; animation-delay: 0.6s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 80%; animation-delay: 0.7s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 40%; animation-delay: 0.8s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 70%; animation-delay: 0.9s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 50%; animation-delay: 1.0s;"></div>
+                                <div class="waveform-bar w-1 bg-primary-fixed-dim rounded-full" style="height: 90%; animation-delay: 1.1s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                
+                <section class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm flex flex-col min-h-[600px]">
+                    <div class="grid grid-cols-2 border-b border-outline-variant">
+                        <div class="p-4 border-r border-outline-variant bg-surface-container-low font-label-md text-label-md flex justify-between items-center">
+                            <span>Source (Tamil)</span>
+                            <span class="material-symbols-outlined text-secondary text-[20px]">mic</span>
+                        </div>
+                        <div class="p-4 bg-surface-container-high text-on-primary-container font-label-md text-label-md flex justify-between items-center">
+                            <span>Target (English)</span>
+                            <span class="material-symbols-outlined text-primary text-[20px]">volume_up</span>
+                        </div>
+                    </div>
+                    <div class="flex-grow overflow-y-auto p-6 space-y-8">
+                        <div class="grid grid-cols-2 gap-8 items-start relative">
+                            <div class="space-y-2">
+                                <p class="font-body-lg text-body-lg text-on-surface">வணக்கம், நீங்கள் இன்று எப்படி இருக்கிறீர்கள்?</p>
+                                <span class="text-[10px] text-outline font-label-sm">[02:14:10]</span>
+                            </div>
+                            <div class="space-y-2 bg-primary-fixed p-4 rounded-lg relative">
+                                <div class="absolute left-0 top-4 -ml-2 w-4 h-4 bg-primary-fixed transform rotate-45"></div>
+                                <p class="font-body-lg text-body-lg text-on-primary-fixed">Hello, how are you doing today?</p>
+                                <div class="flex gap-2">
+                                    <span class="text-[10px] text-on-primary-fixed-variant font-label-sm">Inference: 45ms</span>
+                                    <span class="text-[10px] text-on-primary-fixed-variant font-label-sm">Confidence: 99.8%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-8 items-start relative opacity-90">
+                            <div class="space-y-2">
+                                <p class="font-body-lg text-body-lg text-on-surface">நான் மருந்துகளை எடுத்துக்கொண்டேன், ஆனால் தலைவலி இன்னும் குறையவில்லை. <span class="bg-error-container text-on-error-container px-1">Check progress?</span></p>
+                                <span class="text-[10px] text-outline font-label-sm">[02:14:22]</span>
+                            </div>
+                            <div class="space-y-2 bg-primary-fixed p-4 rounded-lg relative">
+                                <div class="absolute left-0 top-4 -ml-2 w-4 h-4 bg-primary-fixed transform rotate-45"></div>
+                                <p class="font-body-lg text-body-lg text-on-primary-fixed">I took the medication, but the headache hasn't subsided yet. Check progress?</p>
+                                <div class="flex gap-2">
+                                    <span class="text-[10px] text-on-primary-fixed-variant font-label-sm">Inference: 62ms</span>
+                                    <span class="text-[10px] text-on-primary-fixed-variant font-label-sm">Confidence: 94.2%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-8 items-start relative">
+                            <div class="space-y-2">
+                                <p class="font-body-lg text-body-lg text-on-surface flex items-center gap-2">
+                                    <span>இப்போது நான் என்ன செய்ய வேண்டும் என்று...</span>
+                                    <span class="flex gap-1">
+                                        <span class="w-1 h-1 bg-primary rounded-full animate-bounce"></span>
+                                        <span class="w-1 h-1 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                                        <span class="w-1 h-1 bg-primary rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="space-y-2 border-2 border-dashed border-primary-container p-4 rounded-lg relative bg-surface-container">
+                                <p class="font-body-lg text-body-lg text-secondary italic">Synthesizing: "What should I do now..."</p>
+                                <div class="w-full h-1 bg-outline-variant rounded-full overflow-hidden">
+                                    <div class="h-full bg-primary animate-[flow_2s_linear_infinite]" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-surface-container border-t border-outline-variant flex justify-between items-center">
+                        <div class="flex gap-2">
+                            <button onclick="switchTab('vault')" class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-primary-container shadow-md">
+                                <span class="material-symbols-outlined">save</span>
+                                Save Session
+                            </button>
+                            <button onclick="switchTab('vault')" class="flex items-center gap-2 border border-outline text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-variant">
+                                <span class="material-symbols-outlined">history</span>
+                                Review History
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                                <span class="font-label-sm text-label-sm">Audio Sync: 12ms</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-error"></span>
+                                <span class="font-label-sm text-label-sm">Latency: 84ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW: ANALYTICS VAULT                      -->
+        <!-- ========================================== -->
+        <div id="view-vault" style="display: none;">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface">Saved Interaction Log Ledger</h1>
+                    <p class="font-body-md text-on-surface-variant">Historical database of processed voice translation packets and analytical metadata.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <span class="material-symbols-outlined text-outline absolute left-3 top-1/2 -translate-y-1/2">search</span>
+                        <input class="pl-10 pr-4 py-2 border border-outline rounded-lg bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm w-[260px]" placeholder="Search by UUID or filename..." type="text"/>
+                    </div>
+                    <button class="flex items-center gap-2 px-4 py-2 bg-surface-container border border-outline rounded-lg text-sm font-label-md text-on-surface hover:bg-surface-variant">
+                        <span class="material-symbols-outlined text-[18px]">filter_list</span> Filters
+                    </button>
+                    <button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-label-md hover:bg-primary-container shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">download</span> Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col mb-8">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="border-b border-outline-variant bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant uppercase">
+                                <th class="p-4 pl-6">UUID</th>
+                                <th class="p-4">SOURCE FILE</th>
+                                <th class="p-4">LANG (CONF)</th>
+                                <th class="p-4">MODE</th>
+                                <th class="p-4">DURATION</th>
+                                <th class="p-4">STATUS</th>
+                                <th class="p-4 pr-6 text-right">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-surface-container-lowest divide-y divide-outline-variant">
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="p-4 pl-6 font-body-sm text-body-sm text-secondary">#VX-8821</td>
+                                <td class="p-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px] text-primary">audio_file</span>
+                                        <span class="font-label-md text-label-md text-on-surface">clinic_patient.wav</span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex flex-col">
+                                        <span class="font-label-md text-label-md text-on-surface">Tamil</span>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                            <span class="text-[10px] font-bold text-tertiary">0.99 Confidence</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4"><span class="bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-md font-label-sm text-[11px]">Formal</span></td>
+                                <td class="p-4 font-body-sm text-body-sm text-on-surface-variant">14.2s</td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit bg-tertiary-container text-on-tertiary-container">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                                        <span class="text-[10px] font-bold tracking-wider">SUCCESS</span>
+                                    </span>
+                                </td>
+                                <td class="p-4 pr-6 text-right"><button class="font-label-md text-label-md text-primary hover:text-primary-container">View Details</button></td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="p-4 pl-6 font-body-sm text-body-sm text-secondary">#VX-9104</td>
+                                <td class="p-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px] text-primary">music_note</span>
+                                        <span class="font-label-md text-label-md text-on-surface">market_chat.mp3</span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex flex-col">
+                                        <span class="font-label-md text-label-md text-on-surface">Telugu</span>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                            <span class="text-[10px] font-bold text-tertiary">0.92 Confidence</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4"><span class="bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-md font-label-sm text-[11px]">Informal</span></td>
+                                <td class="p-4 font-body-sm text-body-sm text-on-surface-variant">32.5s</td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit bg-tertiary-container text-on-tertiary-container">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                                        <span class="text-[10px] font-bold tracking-wider">SUCCESS</span>
+                                    </span>
+                                </td>
+                                <td class="p-4 pr-6 text-right"><button class="font-label-md text-label-md text-primary hover:text-primary-container">View Details</button></td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="p-4 pl-6 font-body-sm text-body-sm text-secondary">#VX-0027</td>
+                                <td class="p-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px] text-error">error</span>
+                                        <span class="font-label-md text-label-md text-on-surface">broken_audio.wav</span>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex flex-col">
+                                        <span class="font-label-md text-label-md text-on-surface">Unknown</span>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                            <span class="text-[10px] font-bold text-error">0.12 Confidence</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4"><span class="bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-md font-label-sm text-[11px]">Formal</span></td>
+                                <td class="p-4 font-body-sm text-body-sm text-on-surface-variant">2.1s</td>
+                                <td class="p-4">
+                                    <span class="px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit bg-error-container text-on-error-container">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-on-error-container"></span>
+                                        <span class="text-[10px] font-bold tracking-wider">FAILED</span>
+                                    </span>
+                                </td>
+                                <td class="p-4 pr-6 text-right"><button class="font-label-md text-label-md text-primary hover:text-primary-container">View Details</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-between">
+                    <span class="font-body-sm text-body-sm text-secondary">Showing 1 to 3 of 152 entries</span>
+                    <div class="flex gap-2">
+                        <button class="w-8 h-8 flex items-center justify-center border border-outline rounded-lg bg-surface text-secondary hover:bg-surface-container-low">
+                            <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                        </button>
+                        <button class="w-8 h-8 flex items-center justify-center border border-outline rounded-lg bg-surface text-secondary hover:bg-surface-container-low">
+                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                <div class="bg-primary-fixed border border-primary-fixed-dim rounded-xl p-6 shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="font-label-sm text-label-sm text-on-primary-fixed-variant uppercase tracking-wider">Translation Accuracy</span>
+                        <span class="material-symbols-outlined text-primary">bar_chart</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-4">
+                        <span class="font-display-lg text-[32px] font-bold text-on-primary-fixed">94.2%</span>
+                        <span class="font-label-sm text-label-sm text-tertiary">+2.1% ↑</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-primary-fixed-dim rounded-full overflow-hidden">
+                        <div class="h-full bg-primary" style="width: 94.2%;"></div>
+                    </div>
+                </div>
+                <div class="bg-primary-fixed border border-primary-fixed-dim rounded-xl p-6 shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="font-label-sm text-label-sm text-on-primary-fixed-variant uppercase tracking-wider">Total Throughput</span>
+                        <span class="material-symbols-outlined text-primary">timer</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-4">
+                        <span class="font-display-lg text-[32px] font-bold text-on-primary-fixed">1,482</span>
+                        <span class="font-label-sm text-label-sm text-on-primary-fixed-variant">hrs logged</span>
+                    </div>
+                    <div class="flex items-end gap-1 h-6">
+                        <div class="w-full bg-primary-fixed-dim h-[30%]"></div>
+                        <div class="w-full bg-primary-fixed-dim h-[50%]"></div>
+                        <div class="w-full bg-primary-fixed-dim h-[25%]"></div>
+                        <div class="w-full bg-primary opacity-80 h-[80%]"></div>
+                        <div class="w-full bg-primary h-[60%]"></div>
+                    </div>
+                </div>
+                <div class="bg-primary-fixed border border-primary-fixed-dim rounded-xl p-6 shadow-sm">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="font-label-sm text-label-sm text-on-primary-fixed-variant uppercase tracking-wider">Active Dialects</span>
+                        <span class="material-symbols-outlined text-primary">public</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-4">
+                        <span class="font-display-lg text-[32px] font-bold text-on-primary-fixed">38</span>
+                        <span class="font-label-sm text-label-sm text-on-primary-fixed-variant">Languages</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2.5 py-1 bg-surface-container-lowest border border-outline-variant rounded-full font-label-sm text-[10px] text-on-surface">Hindi</span>
+                        <span class="px-2.5 py-1 bg-surface-container-lowest border border-outline-variant rounded-full font-label-sm text-[10px] text-on-surface">Tamil</span>
+                        <span class="px-2.5 py-1 bg-surface-container-lowest border border-outline-variant rounded-full font-label-sm text-[10px] text-on-surface">Spanish</span>
+                        <span class="px-2.5 py-1 bg-surface-container-lowest border border-outline-variant rounded-full font-label-sm text-[10px] text-on-surface">+35 more</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="bg-surface-container-low border-t border-outline-variant mt-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full py-6 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-4">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <span class="font-label-md text-label-md font-bold text-on-surface">VoxLingua AI</span>
+                <span class="font-label-sm text-label-sm text-on-secondary-fixed-variant">© 2024 VoxLingua AI. All rights reserved.</span>
+            </div>
+            <div class="flex gap-6">
+                <a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:underline decoration-primary transition-opacity" href="#">Documentation</a>
+                <a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:underline decoration-primary transition-opacity" href="#">System Status</a>
+                <a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:underline decoration-primary transition-opacity" href="#">Security</a>
+                <a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:underline decoration-primary transition-opacity" href="#">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all views
+            document.getElementById('view-gateway').style.display = 'none';
+            document.getElementById('view-insights').style.display = 'none';
+            document.getElementById('view-vault').style.display = 'none';
+            
+            // Show selected view
+            document.getElementById('view-' + tabId).style.display = 'block';
+            
+            // Reset nav styles
+            const navButtons = [
+                document.getElementById('tab-gateway'),
+                document.getElementById('tab-insights'),
+                document.getElementById('tab-vault')
+            ];
+            
+            navButtons.forEach(btn => {
+                btn.className = "font-label-md text-label-md text-secondary hover:text-primary-container transition-colors";
+            });
+            
+            // Highlight selected nav
+            document.getElementById('tab-' + tabId).className = "font-label-md text-label-md text-primary border-b-2 border-primary pb-1";
+        }
+        
+        // Micro-interactions and mocks
+        const dropArea = document.querySelector('.drag-dash-border');
+        const fileInput = document.getElementById('audio-upload');
+        if (dropArea && fileInput) {
+            dropArea.addEventListener('click', () => fileInput.click());
+            dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.classList.add('bg-primary-fixed'); });
+            dropArea.addEventListener('dragleave', () => dropArea.classList.remove('bg-primary-fixed'));
+            dropArea.addEventListener('drop', (e) => { e.preventDefault(); dropArea.classList.remove('bg-primary-fixed'); });
+        }
+    </script>
+</body>
+</html>
