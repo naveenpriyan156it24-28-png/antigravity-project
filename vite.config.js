@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  // No React plugin — pro.html is a standalone static frontend
+  plugins: [],
   server: {
     port: 3000,
     proxy: {
@@ -11,6 +11,12 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       }
+    }
+  },
+  // Make pro.html the entry point
+  build: {
+    rollupOptions: {
+      input: 'pro.html'
     }
   }
 });
